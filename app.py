@@ -44,46 +44,37 @@ class MainFrame(wx.Frame):
 		menuFile = wx.Menu()
 		mainMenu.Append(menuFile, "文件")
 		# Menu item: File > Open
-		menuFileOpen = menuFile.Append(wx.ID_OPEN, "添加")
+		menuFileOpen = addMenuItem(self, menuFile, wx.ID_OPEN, "添加", wx.EVT_MENU, self.OnFileOpen)
 		# Menu item: Separator
 		menuFile.AppendSeparator()
 		# Menu item: File > Convert
-		menuFileConvert = menuFile.Append(wx.NewId(), "转换")
+		menuFileConvert = addMenuItem(self, menuFile, wx.NewId(), "转换", wx.EVT_MENU, self.OnFileConvert)
 		#Menu item: Separator
 		menuFile.AppendSeparator()
 		# Menu item: File > Exit
-		menuFileQuit = menuFile.Append(wx.ID_EXIT, "退出")
+		menuFileQuit = addMenuItem(self, menuFile, wx.ID_EXIT, "退出", wx.EVT_MENU, self.OnFileQuit)
 		# Menu item: Help
 		menuHelp = wx.Menu()
 		# Menu item: Help > About
-		menuHelpAbout = menuHelp.Append(wx.ID_ABOUT, "关于")
+		menuHelpAbout = addMenuItem(self, menuHelp, wx.ID_ABOUT, "关于", wx.EVT_MENU, self.OnHelpAbout)
 		mainMenu.Append(menuHelp, "帮助")
 		self.SetMenuBar(mainMenu)
-		# Bind menu item functions
-		self.Bind(wx.EVT_MENU, self.OnHelpAbout, menuHelpAbout)
-		self.Bind(wx.EVT_MENU, self.OnFileOpen, menuFileOpen)
-		self.Bind(wx.EVT_MENU, self.OnFileConvert, menuFileConvert)
-		self.Bind(wx.EVT_MENU, self.OnFileQuit, menuFileQuit)
 
 		# Set tool bar items
 		toolBar = self.CreateToolBar(wx.TB_VERTICAL)
-		toolBarOpen = toolBar.AddSimpleTool(wx.ID_OPEN, wx.Bitmap("icons/add.png"), "添加文件")
-		toolBarQuit = toolBar.AddSimpleTool(wx.ID_EXIT, wx.Bitmap("icons/quit.png"), "退出")
-		toolBarConvert = toolBar.AddSimpleTool(wx.NewId(), wx.Bitmap("icons/circle.png"), "转换")
-		self.Bind(wx.EVT_TOOL, self.OnFileConvert, toolBarConvert)
+		toolBarOpen = addSimpleTool(self, toolBar, wx.ID_OPEN, wx.Bitmap("icons/add.png"), "添加文件")
+		toolBarQuit = addSimpleTool(self, toolBar, wx.ID_EXIT, wx.Bitmap("icons/quit.png"), "退出")
+		toolBarConvert = addSimpleTool(self, toolBar, wx.NewId(), wx.Bitmap("icons/circle.png"), "转换", event = wx.EVT_TOOL, handler = self.OnFileConvert)
 		toolBar.EnableTool(toolBarConvert.GetId(), False)
-		toolBarAbout = toolBar.AddSimpleTool(wx.ID_ABOUT, wx.Bitmap("icons/info.png"), "关于")
+		toolBarAbout = addSimpleTool(self, toolBar, wx.ID_ABOUT, wx.Bitmap("icons/info.png"), "关于")
 		self.toolBar = toolBar
 		self.toolBarConvert = toolBarConvert
 
 		# List Control
-		# Caution! !!!This area is UNDER CONSTRUCTION!!!
-		# !!!CONSTRUCTION START!!!
 		self.list = wx.ListCtrl(self, -1, style = wx.LC_REPORT | wx.LC_HRULES, size = (520, 200))
 		self.list.InsertColumn(0, "序号", format = wx.LIST_FORMAT_LEFT, width = 40)
 		self.list.InsertColumn(1, "文件来源", format = wx.LIST_FORMAT_LEFT, width = 400)
 		self.list.InsertColumn(2, "状态", format = wx.LIST_FORMAT_LEFT, width = 80)
-		# !!!CONSTRUCTION END!!!
 
 	def OnHelpAbout(self, event):
 		aboutInfo = wx.AboutDialogInfo()
@@ -210,16 +201,53 @@ class Convertor(threading.Thread):
 				print "%s converted ---- %s" % (currentFile, time.asctime())
 		wx.CallAfter(self.caller.successAttention)
 
+def addMenuItem(self, parent, id, text, event = None, handler = None):
+	'''
+	为指定菜单创建菜单项
+	Args:
+		self: wx.Frame 对象
+		parent: 所属的菜单
+		id: 菜单项的 ID
+		text: 菜单项上的文本
+		event: 要监听的事件
+		handler: 处理器
+	Returns:
+		生成的菜单项对象
+	'''
+	_menuItem = parent.Append(id, text)
+	if event and handler:
+		self.Bind(event, handler, _menuItem)
+	return _menuItem
+
+def addSimpleTool(self, parent, id, bitmap, text, event = None, handler = None):
+	'''
+	为指定工具栏添加工具
+	Args:
+		self: wx.Frame 对象
+		parent: 所属的工具栏
+		id: 工具的 ID
+		bitmap: Bitmap 对象, 工具上的图像
+		text: 工具栏的提示文本
+		event: 要监听的事件
+		handler: 处理器
+	Returns:
+		menu item
+	'''
+	_toolBarItem = parent.AddSimpleTool(id, bitmap, text)
+	if event and handler:
+		self.Bind(event, handler, _toolBarItem)
+	return _toolBarItem
+
 def initFileList(fileList, listCtrl):
 	'''
-	Init listCtrl with fileList
+	使用给定的列表初始化列表控件
 	Args:
-		fileList: list containing file paths in string
-		listCtrl: wx.ListCtrl object
+		fileList: 包含所有文件路径的列表
+		listCtrl: wx.ListCtrl 对象
 	Returns:
 		None
 	'''
-	# Clear list control first
+	# 清空列表控件中的项目
 	listCtrl.DeleteAllItems()
 	for _file in fileList:
 		_i = fileList.index(_file)
@@ -229,21 +257,21 @@ def initFileList(fileList, listCtrl):
 
 def rmDuplicates(inputList):
 	'''
-	Remove duplicates from a list
+	列表去重
 	Args:
-		inputList: list to process
+		inputList: 要处理的列表
 	Returns:
-		processed list
+		处理后的列表
 	'''
 	return list(set(inputList))
 
 def randomStr(length):
 	'''
-	提供指定长度的字符串
+	提供指定长度的随机字符串
 	Args:
-		length: int, length of result string
+		length: int, 随机字符串的长度
 	Returns:
-		result string
+		生成的随机字符串
 	'''
 	return "".join(random.sample(["a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z", "Z", "Y", "X", "W", "V", "U", "T", "S", "R", "Q", "P", "O", "N", "M", "L", "K", "J", "I", "H", "G", "F", "E", "D", "C", "B", "A", "0", "1", "2", "3", "4", "5", "6", "7", "8", "9"], length)).replace(" ","")
 
