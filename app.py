@@ -34,7 +34,7 @@ class MainFrame(wx.Frame):
 	def __init__(self):
 		wx.Frame.__init__(self, None, -1, cfg.APP_NAME, size = (cfg.APP_START_WIDTH, cfg.APP_START_HEIGHT), style = wx.DEFAULT_FRAME_STYLE ^ (wx.RESIZE_BORDER | wx.MINIMIZE_BOX | wx.MAXIMIZE_BOX))
 		mainPanel = wx.Panel(self, -1)
-		#
+		# 用于存放队列文件路径
 		self.filePath = []
 
 		# Set menu bar items
@@ -44,7 +44,7 @@ class MainFrame(wx.Frame):
 		menuFile = wx.Menu()
 		mainMenu.Append(menuFile, "文件")
 		# Menu item: File > Open
-		menuFileOpen = menuFile.Append(wx.ID_OPEN, "打开")
+		menuFileOpen = menuFile.Append(wx.ID_OPEN, "添加")
 		# Menu item: Separator
 		menuFile.AppendSeparator()
 		# Menu item: File > Convert
@@ -67,12 +67,12 @@ class MainFrame(wx.Frame):
 
 		# Set tool bar items
 		toolBar = self.CreateToolBar(wx.TB_VERTICAL)
-		toolBarOpen = toolBar.AddSimpleTool(wx.ID_OPEN, wx.Bitmap("icons/add.png"), "Select file")
-		toolBarQuit = toolBar.AddSimpleTool(wx.ID_EXIT, wx.Bitmap("icons/quit.png"), "Quit")
-		toolBarConvert = toolBar.AddSimpleTool(wx.NewId(), wx.Bitmap("icons/circle.png"), "Convert")
+		toolBarOpen = toolBar.AddSimpleTool(wx.ID_OPEN, wx.Bitmap("icons/add.png"), "添加文件")
+		toolBarQuit = toolBar.AddSimpleTool(wx.ID_EXIT, wx.Bitmap("icons/quit.png"), "退出")
+		toolBarConvert = toolBar.AddSimpleTool(wx.NewId(), wx.Bitmap("icons/circle.png"), "转换")
 		self.Bind(wx.EVT_TOOL, self.OnFileConvert, toolBarConvert)
 		toolBar.EnableTool(toolBarConvert.GetId(), False)
-		toolBarAbout = toolBar.AddSimpleTool(wx.ID_ABOUT, wx.Bitmap("icons/info.png"), "About")
+		toolBarAbout = toolBar.AddSimpleTool(wx.ID_ABOUT, wx.Bitmap("icons/info.png"), "关于")
 		self.toolBar = toolBar
 		self.toolBarConvert = toolBarConvert
 
@@ -108,19 +108,17 @@ class MainFrame(wx.Frame):
 		if dlgFileOpen.ShowModal() == wx.ID_OK:
 			fileSelected = dlgFileOpen.GetPaths()
 			print "Selected file(s): %s ---- %s" % (fileSelected, time.asctime())
-			self.filePath = fileSelected[:]
-			self.toolBar.EnableTool(self.toolBarConvert.GetId(), True)
-			for _file in self.filePath:
-				_i = self.filePath.index(_file)
-				_index = self.list.InsertStringItem(_i, str(_i + 1))
-				self.list.SetStringItem(_index, 1, _file)
-				self.list.SetStringItem(_index, 2, "等待")
+			self.filePath += fileSelected[:]
+			self.filePath = rmDuplicates(self.filePath)
+			if self.filePath:
+				self.toolBar.EnableTool(self.toolBarConvert.GetId(), True)
+			initFileList(self.filePath, self.list)
 		dlgFileOpen.Destroy()
 
 	def OnFileConvert(self, event):
 		import string
 		if not self.filePath:
-			dlgAlert = wx.MessageDialog(None, "请先选择一个音频文件", "没有选择文件", wx.OK | wx.ICON_ERROR)
+			dlgAlert = wx.MessageDialog(None, "请先选择至少一个音频文件", "没有选择文件", wx.OK | wx.ICON_ERROR)
 			dlgAlert.ShowModal()
 			dlgAlert.Destroy()
 		else:
@@ -212,6 +210,32 @@ class Convertor(threading.Thread):
 				print "%s converted ---- %s" % (currentFile, time.asctime())
 		wx.CallAfter(self.caller.successAttention)
 
+def initFileList(fileList, listCtrl):
+	'''
+	Init listCtrl with fileList
+	Args:
+		fileList: list containing file paths in string
+		listCtrl: wx.ListCtrl object
+	Returns:
+		None
+	'''
+	# Clear list control first
+	listCtrl.DeleteAllItems()
+	for _file in fileList:
+		_i = fileList.index(_file)
+		_index = listCtrl.InsertStringItem(_i, str(_i + 1))
+		listCtrl.SetStringItem(_index, 1, _file)
+		listCtrl.SetStringItem(_index, 2, "等待")
+
+def rmDuplicates(inputList):
+	'''
+	Remove duplicates from a list
+	Args:
+		inputList: list to process
+	Returns:
+		processed list
+	'''
+	return list(set(inputList))
 
 def randomStr(length):
 	'''
