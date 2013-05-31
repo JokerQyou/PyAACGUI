@@ -166,7 +166,7 @@ class Convertor(threading.Thread):
 					targetFile = os.path.splitext(currentFile)[0] + ".m4a"
 					print targetFile
 					toAac = subprocess.Popen(["neroAacEnc",\
-											 "-br", "512000",\
+											 "-br", str(cfg.AAC_BITRATE),\
 											 "-2pass",\
 											 "-ignorelength",\
 											 "-lc",\
@@ -195,7 +195,7 @@ class Convertor(threading.Thread):
 				'''
 				targetFile = os.path.splitext(currentFile)[0] + ".m4a"
 				toAac = subprocess.Popen(["neroAacEnc",\
-										 "-br", "512000",\
+										 "-br", str(cfg.AAC_BITRATE),\
 										 "-2pass",\
 										 "-ignorelength",\
 										 "-lc",\
