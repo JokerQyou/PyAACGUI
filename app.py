@@ -32,8 +32,10 @@ class MainFrame(wx.Frame):
 	Customized Frame class for PyAac GUI
 	'''
 	def __init__(self):
-		wx.Frame.__init__(self, None, -1, cfg.APP_NAME, size = (cfg.APP_START_WIDTH, cfg.APP_START_HEIGHT), style = wx.DEFAULT_FRAME_STYLE ^ (wx.RESIZE_BORDER | wx.MINIMIZE_BOX | wx.MAXIMIZE_BOX))
-		mainPanel = wx.Panel(self, -1)
+		wx.Frame.__init__(self, None, -1, cfg.APP_NAME, size = (cfg.APP_START_WIDTH, cfg.APP_START_HEIGHT), style = wx.DEFAULT_FRAME_STYLE)
+		self.SetMinSize((cfg.APP_START_WIDTH, cfg.APP_START_HEIGHT))
+		sizer = wx.GridSizer(rows = 3, cols = 1, hgap = 20, vgap = 20)
+		# mainPanel = wx.Panel(self, -1)
 		# 用于存放队列文件路径
 		self.filePath = []
 
@@ -44,19 +46,19 @@ class MainFrame(wx.Frame):
 		menuFile = wx.Menu()
 		mainMenu.Append(menuFile, "文件")
 		# Menu item: File > Open
-		menuFileOpen = addMenuItem(self, menuFile, wx.ID_OPEN, "添加", wx.EVT_MENU, self.OnFileOpen)
+		menuFileOpen = addMenuItem(self, menuFile, wx.ID_OPEN, "添加", event = wx.EVT_MENU, handler = self.OnFileOpen)
 		# Menu item: Separator
 		menuFile.AppendSeparator()
 		# Menu item: File > Convert
-		menuFileConvert = addMenuItem(self, menuFile, wx.NewId(), "转换", wx.EVT_MENU, self.OnFileConvert)
+		menuFileConvert = addMenuItem(self, menuFile, wx.NewId(), "转换", event = wx.EVT_MENU, handler = self.OnFileConvert)
 		#Menu item: Separator
 		menuFile.AppendSeparator()
 		# Menu item: File > Exit
-		menuFileQuit = addMenuItem(self, menuFile, wx.ID_EXIT, "退出", wx.EVT_MENU, self.OnFileQuit)
+		menuFileQuit = addMenuItem(self, menuFile, wx.ID_EXIT, "退出", event = wx.EVT_MENU, handler = self.OnFileQuit)
 		# Menu item: Help
 		menuHelp = wx.Menu()
 		# Menu item: Help > About
-		menuHelpAbout = addMenuItem(self, menuHelp, wx.ID_ABOUT, "关于", wx.EVT_MENU, self.OnHelpAbout)
+		menuHelpAbout = addMenuItem(self, menuHelp, wx.ID_ABOUT, "关于", event = wx.EVT_MENU, handler = self.OnHelpAbout)
 		mainMenu.Append(menuHelp, "帮助")
 		self.SetMenuBar(mainMenu)
 
@@ -71,10 +73,14 @@ class MainFrame(wx.Frame):
 		self.toolBarConvert = toolBarConvert
 
 		# List Control
-		self.list = wx.ListCtrl(self, -1, style = wx.LC_REPORT | wx.LC_HRULES, size = (520, 200))
+		self.list = wx.ListCtrl(self, -1, style = wx.LC_REPORT | wx.LC_HRULES)
 		self.list.InsertColumn(0, "序号", format = wx.LIST_FORMAT_LEFT, width = 40)
 		self.list.InsertColumn(1, "文件来源", format = wx.LIST_FORMAT_LEFT, width = 400)
 		self.list.InsertColumn(2, "状态", format = wx.LIST_FORMAT_LEFT, width = 80)
+		# Add list control to grid sizer so we dont have to manage it
+		sizer.Add(self.list, 0, flag = wx.EXPAND | wx.ALL, border = 10)
+		self.SetSizer(sizer)
+		self.Fit()
 
 	def OnHelpAbout(self, event):
 		aboutInfo = wx.AboutDialogInfo()
