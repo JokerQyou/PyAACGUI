@@ -20,6 +20,10 @@ PyAACGUI
 
 安装所有需要的程序后下载本项目，解压后运行 `gui` 文件即可。（如果提示没有权限请自行更改 `gui` 文件权限为可执行）
 
+##EXTRA##
+
+如果你需要一个根据 CUE 索引切分音轨的程序，推荐使用 `cue2tracks` 。
+
 ##授权##
 
 BSD License ，见 BSD.license 文件 。
