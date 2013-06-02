@@ -157,7 +157,7 @@ class Convertor(threading.Thread):
 				最后删除临时文件。
 				TODO: 使用 neroAacTag 程序写入音频文件标签
 				'''
-				tempFile = os.path.join(tempfile.gettempdir(), randomStr(12) + ".wav")
+				tempFile = os.path.join(cfg.TEMP_DIR, randomStr(12) + ".wav")
 				toWave = subprocess.Popen(["mplayer",\
 										  "-vo", "null",\
 										  "-ao", "pcm:file=" + tempFile,\
@@ -283,6 +283,8 @@ def randomStr(length):
 
 
 def main():
+	if not cfg.TEMP_DIR:
+		cfg.TEMP_DIR = tempfile.gettempdir()
 	app = App(True)
 	print "%s ---- %s" % ("App launched.", time.asctime())
 	app.MainLoop()
