@@ -100,7 +100,21 @@ class MainFrame(wx.Frame):
 	def OnFileOpen(self, event):
 		defaultDir = os.path.expanduser('~')
 		defaultFile = ""
-		fileFilters = "Free Lossless Audio Codec (*.flac)|*.flac|WAVE audio (*.wav)|*.wav|Monkey's Audio (*.ape)|*.ape|Wave pack (*.wv)|*.wv|TTA audio (*.tta)|*.tta|TAK audio (*.tak)|*.tak|All files (*.*)|*.*"
+		fileFilters = ''.join([
+			"Free Lossless Audio Codec (*.flac)|*.flac", 
+			"|", 
+			"WAVE audio (*.wav)|*.wav", 
+			"|", 
+			"Monkey's Audio (*.ape)|*.ape", 
+			"|", 
+			"Wave pack (*.wv)|*.wv", 
+			"|", 
+			"TTA audio (*.tta)|*.tta", 
+			"|", 
+			"TAK audio (*.tak)|*.tak", 
+			"|", 
+			"All files (*.*)|*.*"
+			])
 		dlgFileOpen = wx.FileDialog(None, "Select an audio file", defaultDir, defaultFile, fileFilters, wx.OPEN | wx.MULTIPLE)
 		if dlgFileOpen.ShowModal() == wx.ID_OK:
 			fileSelected = dlgFileOpen.GetPaths()
