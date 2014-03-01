@@ -1,28 +1,11 @@
 PyAACGUI
 ========
 
-将无损音频文件转换为使用 Nero AAC Codec 编码的高品质音乐。
+Converting high quality music files using Nero AAC Codecs.
 
-在使用 Ubuntu 的过程中发现没有顺手的转换器，个人喜欢用 Nero AAC Codec ，但大部分图形界面转换器都不支持；脚本转换批量文件非常不方便，所以就写了这个。
+##Attention##
 
-##依赖##
-
-* `MPlayer`
-* Nero AAC Codec (包括 `neroAacEnc` 、`neroAacDec` 和 `neroAacTag` )
-* `MediaInfo`
-* `wxPython`
-
-程序的本质只是透过 wxPython 提供的图形界面将上面这些软件粘合起来而已。
-
-##使用##
-
-现在功能基本可用，虽然比较丑陋（可能还有未发现的 BUG ）。
-
-安装所有需要的程序后下载本项目，解压后运行 `gui` 文件即可。（如果提示没有权限请自行更改 `gui` 文件权限为可执行）
-
-##EXTRA##
-
-如果你需要一个根据 CUE 索引切分音轨的程序，推荐使用 `cue2tracks` 。
+This project is deprecated, please see the new project [PyAACGUI2](https://github.com/JokerQyouPyAACGUI2 ) which fully inherits its functionalities and extends even more. 
 
 ##授权##
 
