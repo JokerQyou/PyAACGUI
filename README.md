@@ -5,7 +5,7 @@ Converting high quality music files using Nero AAC Codecs.
 
 ##Attention##
 
-This project is deprecated, please see the new project [PyAACGUI2](https://github.com/JokerQyouPyAACGUI2 ) which fully inherits its functionalities and extends even more. 
+This project is deprecated, please see the new project [PyAACGUI2](https://github.com/JokerQyou/PyAACGUI2 ) which fully inherits its functionalities and extends even more. 
 
 ##授权##
 
